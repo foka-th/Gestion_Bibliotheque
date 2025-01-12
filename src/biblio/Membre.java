@@ -28,7 +28,7 @@ public class Membre {
     public void setPrenom(String prenom) { this.prenom = prenom; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-    public java.sql.Date getAdhesionDate() { return adhesionDate; }
+    public java.sql.Date getAdhesionDate() { return (java.sql.Date) adhesionDate; }
     public void setAdhesionDate(Date adhesionDate) { this.adhesionDate = adhesionDate; }
 
     // Méthodes personnalisées
