@@ -38,6 +38,6 @@ public class Livre {
 
     // Méthodes personnalisées
     public void afficherDetails() {
-        System.out.println("ID : " + id + ", Titre : " + titre + ", Auteur : " + auteur + ", Catégorie : " + categorie + ", Exemplaires : " + nombreExemplaires);
+        System.out.println("ID : " + id + ", ISBN : " + isbn + ", Titre : " + titre + ", Auteur : " + auteur + "Natationalité : " + nationaliteAuteur + ", Catégorie : " + categorie + ", Exemplaires : " + nombreExemplaires);
     }
 }
