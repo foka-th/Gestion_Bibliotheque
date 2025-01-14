@@ -31,10 +31,13 @@ public class LivreDAOImpl {
             while (rs.next()) {
                 Livre livre = new Livre(
                         rs.getInt("id"),
+                        rs.getString("isbn"),
                         rs.getString("titre"),
                         rs.getString("auteur"),
+                        rs.getString("nationaliteAuteur"),
                         rs.getString("categorie"),
-                        rs.getInt("nombre_exemplaires")
+                        rs.getDate("dateParution"),
+                        rs.getInt("nombreExemplaires")
                 );
                 livres.add(livre);
             }
@@ -53,10 +56,13 @@ public class LivreDAOImpl {
                 if (rs.next()) {
                     return new Livre(
                             rs.getInt("id"),
+                            rs.getString("isbn"),
                             rs.getString("titre"),
                             rs.getString("auteur"),
+                            rs.getString("nationaliteAuteur"),
                             rs.getString("categorie"),
-                            rs.getInt("nombre_exemplaires")
+                            rs.getDate("dateParution"),
+                            rs.getInt("nombreExemplaires")
                     );
                 }
             }

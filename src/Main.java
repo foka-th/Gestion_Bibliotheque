@@ -3,6 +3,7 @@ import biblio.Membre;
 import dao.LivreDAOImpl;
 import dao.MembreDAOImpl;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
@@ -52,17 +53,34 @@ public class Main {
     }
 
     private static void ajouterLivre() {
+        System.out.print("ISBN : ");
+        String isbn = scanner.nextLine();
         System.out.print("Titre : ");
         String titre = scanner.nextLine();
         System.out.print("Auteur : ");
         String auteur = scanner.nextLine();
+        System.out.print("Nationalité : ");
+        String nationaliteAuteur = scanner.nextLine();
         System.out.print("Catégorie : ");
         String categorie = scanner.nextLine();
+        System.out.print("Date de Parution : ");
+        String dateStr = scanner.nextLine();
+
+        // Créer un format pour analyser la date entrée
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        Date dateParution = null;
+        try {
+            // Convertir la chaîne en objet Date
+            dateParution = sdf.parse(dateStr);
+        } catch (Exception e) {
+            System.out.println("Format de date invalide.");
+        }
         System.out.print("Nombre d'exemplaires : ");
         int nombreExemplaires = scanner.nextInt();
         scanner.nextLine();
 
-        Livre livre = new Livre(0, titre, auteur, categorie, nombreExemplaires);
+        Livre livre = new Livre(0, isbn, titre, auteur, nationaliteAuteur, categorie, dateParution, nombreExemplaires);
         livreDAO.ajouterLivre(livre);
         System.out.println("Livre ajouté avec succès.");
     }

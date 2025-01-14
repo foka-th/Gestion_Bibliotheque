@@ -1,6 +1,7 @@
 package biblio;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 public class Livre {
     private int id;
@@ -9,11 +10,11 @@ public class Livre {
     private String auteur;
     private String nationaliteAuteur;
     private String categorie;
-    private LocalDate dateParution;
+    private Date dateParution;
     private int nombreExemplaires;
 
     // Constructeurs
-    public Livre(int id, String isbn, String titre, String auteur, String nationaliteAuteur, String categorie, LocalDate dateParution, int nombreExemplaires) {
+    public Livre(int id, String isbn, String titre, String auteur, String nationaliteAuteur, String categorie, Date dateParution, int nombreExemplaires) {
         this.id = id;
         this.isbn = isbn;
         this.titre = titre;
@@ -37,13 +38,16 @@ public class Livre {
     public void setNationaliteAuteur(String nationaliteAuteur) { this.nationaliteAuteur = nationaliteAuteur; }
     public String getCategorie() { return categorie; }
     public void setCategorie(String categorie) { this.categorie = categorie; }
-    public LocalDate getDateParution() { return dateParution; }
-    public void setDateParution(LocalDate dateParution) { this.dateParution = dateParution; }
+    public Date getDateParution() { return dateParution; }
+    public void setDateParution(Date dateParution) { this.dateParution = dateParution; }
     public int getNombreExemplaires() { return nombreExemplaires; }
     public void setNombreExemplaires(int nombreExemplaires) { this.nombreExemplaires = nombreExemplaires; }
 
+
+
+
     // Méthodes personnalisées
     public void afficherDetails() {
-        System.out.println("ID : " + id + ", ISBN : " + isbn + ", Titre : " + titre + ", Auteur : " + auteur + "Natationalité : " + nationaliteAuteur + ", Catégorie : " + categorie + ", Exemplaires : " + nombreExemplaires);
+        System.out.println("ID : " + id + ", ISBN : " + isbn + ", Titre : " + titre + ", Auteur : " + auteur + ", Natationalité : " + nationaliteAuteur + ", Catégorie : " + categorie +" , Date de Parution : "+ dateParution +", Exemplaires : " + nombreExemplaires);
     }
 }
