@@ -104,7 +104,18 @@ public class Main {
             if (livres.isEmpty()) {
                 System.out.println("Aucun livre trouvé.");
             } else {
-                livres.forEach(System.out::println);
+                System.out.printf("%-10s %-30s %-20s %-15s %-15s %-15s %-10s\n", "ID", "Titre", "Auteur", "Nationalité", "Catégorie", "ISBN", "Exemplaires");
+                System.out.println("-------------------------------------------------------------------------------------------------------------------");
+                for (Livre livre : livres) {
+                    System.out.printf("%-10d %-30s %-20s %-15s %-15s %-15s %-10d\n",
+                            livre.getId(),
+                            livre.getTitre(),
+                            livre.getAuteur(),
+                            livre.getNationaliteAuteur(),
+                            livre.getCategorie(),
+                            livre.getIsbn(),
+                            livre.getNombreExemplaires());
+                }
             }
         } catch (SQLException e) {
             System.out.println("Erreur lors de la récupération des livres : " + e.getMessage());
@@ -178,7 +189,17 @@ public class Main {
             if (membres.isEmpty()) {
                 System.out.println("Aucun membre trouvé.");
             } else {
-                membres.forEach(System.out::println);
+                System.out.printf("%-10s %-20s %-20s %-30s %-15s %-15s\n", "ID", "Nom", "Prénom", "Email", "Téléphone", "Adhésion");
+                System.out.println("----------------------------------------------------------------------------------------------");
+                for (Membre membre : membres) {
+                    System.out.printf("%-10d %-20s %-20s %-30s %-15s %-15s\n",
+                            membre.getId(),
+                            membre.getNom(),
+                            membre.getPrenom(),
+                            membre.getEmail(),
+                            membre.getTelephone(),
+                            membre.getAdhesionDate());
+                }
             }
         } catch (Exception e) {
             System.out.println("Erreur lors de la récupération des membres : " + e.getMessage());
@@ -226,7 +247,6 @@ public class Main {
             System.out.println("Erreur lors de l'enregistrement de l'emprunt : " + e.getMessage());
         }
     }
-
 
     private static void enregistrerRetour() {
         System.out.println("Cette fonctionnalité sera bientôt disponible.");
