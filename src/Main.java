@@ -1,8 +1,9 @@
 import biblio.*;
 import dao.*;
-
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.Scanner;
+import java.util.List;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
@@ -14,17 +15,12 @@ public class Main {
         boolean continuer = true;
         while (continuer) {
             afficherMenuPrincipal();
-            int choix = scanner.nextInt();
-            scanner.nextLine(); // Consomme la nouvelle ligne restante
+            int choix = lireEntier("Votre choix : ");
 
             switch (choix) {
-                case 1 -> ajouterLivre();
-                case 2 -> listerLivres();
-                case 3 -> inscrireMembre();
-                case 4 -> listerMembres();
-                case 5 -> enregistrerEmprunt();
-                case 6 -> enregistrerRetour();
-                case 7 -> calculerPenalite();
+                case 1 -> gestionLivres();
+                case 2 -> gestionMembres();
+                case 3 -> gestionEmpruntsEtPenalites();
                 case 0 -> continuer = false;
                 default -> System.out.println("Choix invalide. Réessayez.");
             }
@@ -33,15 +29,50 @@ public class Main {
 
     private static void afficherMenuPrincipal() {
         System.out.println("\n--- Menu Principal ---");
+        System.out.println("1. Gestion des livres");
+        System.out.println("2. Gestion des membres");
+        System.out.println("3. Gestion des emprunts et pénalités");
+        System.out.println("0. Quitter");
+    }
+
+    private static int lireEntier(String message) {
+        while (true) {
+            try {
+                System.out.print(message);
+                return Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Erreur : Veuillez entrer un nombre entier valide.");
+            }
+        }
+    }
+
+    private static Date lireDate(String message) {
+        while (true) {
+            try {
+                System.out.print(message);
+                return Date.valueOf(scanner.nextLine());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Erreur : Format de date incorrect. Utilisez le format yyyy-MM-dd.");
+            }
+        }
+    }
+
+    // Gestion des livres
+    private static void gestionLivres() {
+        System.out.println("\n--- Gestion des livres ---");
         System.out.println("1. Ajouter un livre");
         System.out.println("2. Lister les livres");
-        System.out.println("3. Inscrire un membre");
-        System.out.println("4. Lister les membres");
-        System.out.println("5. Enregistrer un emprunt");
-        System.out.println("6. Enregistrer un retour");
-        System.out.println("7. Calculer les pénalités");
-        System.out.println("0. Quitter");
-        System.out.print("Votre choix : ");
+        System.out.println("3. Rechercher un livre par titre");
+        System.out.println("4. Supprimer un livre");
+        int choix = lireEntier("Votre choix : ");
+
+        switch (choix) {
+            case 1 -> ajouterLivre();
+            case 2 -> listerLivres();
+            case 3 -> rechercherLivreParTitre();
+            case 4 -> supprimerLivre();
+            default -> System.out.println("Choix invalide.");
+        }
     }
 
     private static void ajouterLivre() {
@@ -56,27 +87,68 @@ public class Main {
             String categorie = scanner.nextLine();
             System.out.print("ISBN : ");
             String isbn = scanner.nextLine();
-            System.out.print("Date de parution (yyyy-MM-dd) : ");
-            String dateStr = scanner.nextLine();
-            Date dateParution = Date.valueOf(dateStr);
-            System.out.print("Nombre d'exemplaires : ");
-            int nombreExemplaires = scanner.nextInt();
+            Date dateParution = lireDate("Date de parution (yyyy-MM-dd) : ");
+            int nombreExemplaires = lireEntier("Nombre d'exemplaires : ");
 
             Livre livre = new Livre(0, titre, auteur, nationaliteAuteur, categorie, isbn, dateParution, nombreExemplaires);
             livreDAO.ajouterLivre(livre);
-            System.out.println("Livre ajouté avec succès !");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Erreur : Format de date incorrect. Utilisez le format yyyy-MM-dd.");
-        } catch (Exception e) {
-            System.out.println("Erreur : " + e.getMessage());
+            System.out.println("Livre ajouté avec succès.");
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de l'ajout du livre : " + e.getMessage());
         }
     }
 
     private static void listerLivres() {
         try {
-            livreDAO.listerLivres().forEach(System.out::println);
-        } catch (Exception e) {
+            List<Livre> livres = livreDAO.listerLivres();
+            if (livres.isEmpty()) {
+                System.out.println("Aucun livre trouvé.");
+            } else {
+                livres.forEach(System.out::println);
+            }
+        } catch (SQLException e) {
             System.out.println("Erreur lors de la récupération des livres : " + e.getMessage());
+        }
+    }
+
+    private static void rechercherLivreParTitre() {
+        try {
+            System.out.print("Titre du livre à rechercher : ");
+            String titre = scanner.nextLine();
+            Livre livre = livreDAO.rechercherLivreParTitre(titre);
+            if (livre != null) {
+                System.out.println(livre);
+            } else {
+                System.out.println("Aucun livre trouvé avec ce titre.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la recherche : " + e.getMessage());
+        }
+    }
+
+    private static void supprimerLivre() {
+        try {
+            int livreId = lireEntier("ID du livre à supprimer : ");
+            livreDAO.supprimerLivre(livreId);
+            System.out.println("Livre supprimé avec succès.");
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de la suppression du livre : " + e.getMessage());
+        }
+    }
+
+    // Gestion des membres
+    private static void gestionMembres() {
+        System.out.println("\n--- Gestion des membres ---");
+        System.out.println("1. Inscrire un membre");
+        System.out.println("2. Lister les membres");
+        System.out.println("3. Supprimer un membre");
+        int choix = lireEntier("Votre choix : ");
+
+        switch (choix) {
+            case 1 -> inscrireMembre();
+            case 2 -> listerMembres();
+            case 3 -> supprimerMembre();
+            default -> System.out.println("Choix invalide.");
         }
     }
 
@@ -90,15 +162,11 @@ public class Main {
             String email = scanner.nextLine();
             System.out.print("Téléphone : ");
             String telephone = scanner.nextLine();
-            System.out.print("Date d'adhésion (yyyy-MM-dd) : ");
-            String dateStr = scanner.nextLine();
-            Date adhesionDate = Date.valueOf(dateStr);
+            Date adhesionDate = lireDate("Date d'adhésion (yyyy-MM-dd) : ");
 
             Membre membre = new Membre(0, nom, prenom, email, telephone, adhesionDate);
             membreDAO.inscrireMembre(membre);
             System.out.println("Membre inscrit avec succès !");
-        } catch (IllegalArgumentException e) {
-            System.out.println("Erreur : Format de date incorrect. Utilisez le format yyyy-MM-dd.");
         } catch (Exception e) {
             System.out.println("Erreur : " + e.getMessage());
         }
@@ -106,64 +174,65 @@ public class Main {
 
     private static void listerMembres() {
         try {
-            membreDAO.listerMembres().forEach(System.out::println);
+            List<Membre> membres = membreDAO.listerMembres();
+            if (membres.isEmpty()) {
+                System.out.println("Aucun membre trouvé.");
+            } else {
+                membres.forEach(System.out::println);
+            }
         } catch (Exception e) {
             System.out.println("Erreur lors de la récupération des membres : " + e.getMessage());
         }
     }
 
-    private static void enregistrerEmprunt() {
+    private static void supprimerMembre() {
         try {
-            System.out.print("ID du membre : ");
-            int membreId = scanner.nextInt();
-            System.out.print("ID du livre : ");
-            int livreId = scanner.nextInt();
-            scanner.nextLine(); // Consomme la nouvelle ligne restante
-            System.out.print("Date d'emprunt (yyyy-MM-dd) : ");
-            String dateEmpruntStr = scanner.nextLine();
-            Date dateEmprunt = Date.valueOf(dateEmpruntStr);
-            System.out.print("Date retour prévue (yyyy-MM-dd) : ");
-            String dateRetourStr = scanner.nextLine();
-            Date dateRetourPrevue = Date.valueOf(dateRetourStr);
-
-            Emprunt emprunt = new Emprunt(0, membreId, livreId, dateEmprunt, dateRetourPrevue, null);
-            empruntDAO.enregistrerEmprunt(emprunt);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Erreur : Format de date incorrect. Utilisez le format yyyy-MM-dd.");
+            int membreId = lireEntier("ID du membre à supprimer : ");
+            membreDAO.supprimerMembre(membreId);
+            System.out.println("Membre supprimé avec succès !");
         } catch (Exception e) {
-            System.out.println("Erreur : " + e.getMessage());
+            System.out.println("Erreur lors de la suppression du membre : " + e.getMessage());
         }
     }
 
-    private static void enregistrerRetour() {
-        try {
-            System.out.print("ID de l'emprunt : ");
-            int empruntId = scanner.nextInt();
-            scanner.nextLine(); // Consomme la nouvelle ligne restante
-            System.out.print("Date de retour (yyyy-MM-dd) : ");
-            String dateRetourStr = scanner.nextLine();
-            Date dateRetourEffective = Date.valueOf(dateRetourStr);
+    // Gestion des emprunts et pénalités
+    private static void gestionEmpruntsEtPenalites() {
+        System.out.println("\n--- Gestion des emprunts et pénalités ---");
+        System.out.println("1. Enregistrer un emprunt");
+        System.out.println("2. Enregistrer un retour");
+        System.out.println("3. Calculer les pénalités");
+        int choix = lireEntier("Votre choix : ");
 
-            empruntDAO.enregistrerRetour(empruntId, dateRetourEffective);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Erreur : Format de date incorrect. Utilisez le format yyyy-MM-dd.");
-        } catch (Exception e) {
-            System.out.println("Erreur lors de l'enregistrement du retour : " + e.getMessage());
+        switch (choix) {
+            case 1 -> enregistrerEmprunt();
+            case 2 -> enregistrerRetour();
+            case 3 -> calculerPenalite();
+            default -> System.out.println("Choix invalide.");
         }
+    }
+
+    private static void enregistrerEmprunt() {
+        try {
+            int membreId = lireEntier("ID du membre : ");
+            int livreId = lireEntier("ID du livre : ");
+            Date dateEmprunt = lireDate("Date d'emprunt (yyyy-MM-dd) : ");
+            Date dateRetour = lireDate("Date retour prévue (yyyy-MM-dd) : ");
+
+            Emprunt emprunt = new Emprunt(0, membreId, livreId, dateEmprunt, dateRetour, null);
+            empruntDAO.enregistrerEmprunt(emprunt);
+
+            System.out.println("Emprunt enregistré avec succès !");
+        } catch (SQLException e) {
+            System.out.println("Erreur lors de l'enregistrement de l'emprunt : " + e.getMessage());
+        }
+    }
+
+
+    private static void enregistrerRetour() {
+        System.out.println("Cette fonctionnalité sera bientôt disponible.");
     }
 
     private static void calculerPenalite() {
-        try {
-            System.out.print("ID de l'emprunt : ");
-            int empruntId = scanner.nextInt();
-
-            var penalite = empruntDAO.calculerPenalite(empruntId);
-            penalite.ifPresentOrElse(
-                    value -> System.out.println("Pénalité : " + value + " F CFA"),
-                    () -> System.out.println("Pas de pénalité ou emprunt introuvable.")
-            );
-        } catch (Exception e) {
-            System.out.println("Erreur lors du calcul des pénalités : " + e.getMessage());
-        }
+        System.out.println("Cette fonctionnalité sera bientôt disponible.");
     }
 }

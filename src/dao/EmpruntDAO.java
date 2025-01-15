@@ -9,7 +9,7 @@ import java.util.Optional;
 public class EmpruntDAO {
 
     // Méthode pour enregistrer un emprunt
-    public void enregistrerEmprunt(Emprunt emprunt) {
+    public void enregistrerEmprunt(Emprunt emprunt) throws SQLException {
         String sql = "INSERT INTO emprunts (membreId, livreId, dateEmprunt, dateRetourPrevue, dateRetourEffective) VALUES (?, ?, ?, ?, NULL)";
         try (Connection connection = DBConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -19,12 +19,9 @@ public class EmpruntDAO {
             ps.setDate(3, new java.sql.Date(emprunt.getDateEmprunt().getTime()));
             ps.setDate(4, new java.sql.Date(emprunt.getDateRetourPrevue().getTime()));
             ps.executeUpdate();
-
-            System.out.println("Emprunt enregistré avec succès !");
-        } catch (SQLException e) {
-            System.out.println("Erreur lors de l'enregistrement de l'emprunt : " + e.getMessage());
         }
     }
+
 
     // Méthode pour enregistrer un retour
     public void enregistrerRetour(int idEmprunt, java.sql.Date dateRetourEffective) {
